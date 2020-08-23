@@ -1,39 +1,72 @@
 <template>
   <div id="app">
-    <canvas id="myChart" width="1800" height="400"></canvas>
+    <line-chart :chart-data="chartData" :options="options"></line-chart>
   </div>
 </template>
 
 <script>
-import Chart from 'chart.js';
-import planetChartData from './chart-data.js';
+
+import LineChart from './components/LineChart';
+import moment from 'moment';
 
 export default {
   name: 'App',
-  data() {
+  components: {
+    LineChart
+  },
+  data () {
+    const dataSource = {
+      labels: [],
+      data: []
+    }
+    let start = moment(0);
+    for(let i = 0; i < 5000; i++) {
+      dataSource.labels.push(start.add(1, 'minutes').format('LT'));
+      dataSource.data.push(Math.random() * ((1000-20) + 20));
+    }
+    
+    setInterval(() => {
+      this.addPoints(start);
+    }, 5000)
+
+
     return {
-      planetChartData
+      chartData : {
+      labels: dataSource.labels,
+      datasets: [
+        {
+          backgroundColor: '#f87979',
+          data: dataSource.data
+        }
+      ]
+    },
+      options: {
+        responsive: true, 
+        maintainAspectRatio: false,
+        zoom : {
+          enabled: true,
+          mode: 'x',
+          
+        },
+        legend: {display: false},
+        events: ['click']
+      }
     }
   },
-  mounted () {
-    this.createChart('myChart', this.planetChartData);
-  },
   methods: {
-    createChart(chartId, chartData) {
-      const ctx = document.getElementById(chartId);
-      new Chart(ctx, {
-        type: chartData.type,
-        data: chartData.data,
-        options: chartData.options,
-      });
+    addPoints(start) {
+      for(let i = 0; i < 20; i++) {
+        this.chartData.labels.push(start.add(1, 'minutes').format('LT'));
+        this.chartData.datasets[0].data.push(Math.random() * ((1000-20) + 20));
+      }
+      this.chartData = {
+        labels: this.chartData.labels,
+        datasets: [{
+            backgroundColor: '#f87979',
+            data: this.chartData.datasets[0].data
+          }]
+      }
     }
   }
 }
 </script>
-
-<style>
-#app {
-  max-width: 1800px;
-  max-height: 400px;
-}
-</style>

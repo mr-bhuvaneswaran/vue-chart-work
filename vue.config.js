@@ -1,3 +1,3 @@
 module.exports = {
-    publicPath: '/vue-chart-work/'
+    // publicPath: '/vue-chart-work/'
 }
